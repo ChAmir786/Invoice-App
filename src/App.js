@@ -1,7 +1,9 @@
 import React from 'react';
-import { Formik, Field, Form, ErrorMessage, FieldArray } from 'formik';
+import { Formik, Field, Form, FieldArray } from 'formik';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateForm } from './redux/slices/formSlice';
 import * as Yup from 'yup';
-import './App.css'; 
+import './App.css';
 
 // Define Yup validation schema
 const validationSchema = Yup.object().shape({
@@ -16,24 +18,18 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-const initialValues = {
-  friends: [
-    {
-      name: '',
-      email: '',
-    },
-  ],
-};
-
 function App() {
+  const dispatch = useDispatch();
+  const formData = useSelector((state) => state); // Retrieve form data from Redux
+
   return (
     <div className="max-w-2xl mx-auto p-8 bg-white shadow-md rounded-lg mt-10">
       <h1 className="text-3xl font-bold mb-6 text-center">Invite Friends</h1>
       <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema} // Add the validation schema here
-        onSubmit={async (values) => {
-          await new Promise((r) => setTimeout(r, 500));
+        initialValues={formData} // Use Redux state as initialValues
+        validationSchema={validationSchema}
+        onSubmit={(values) => {
+          dispatch(updateForm(values)); // Save form data to Redux
           alert(JSON.stringify(values, null, 2));
         }}
       >
@@ -118,6 +114,6 @@ function App() {
       </Formik>
     </div>
   );
-};
+}
 
 export default App;
